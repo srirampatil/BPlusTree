@@ -107,12 +107,38 @@ public class BTree implements RootChangedListener {
 		t.printInorder(t.getRoot());
 		System.out.println();
 		
-		t.delete(18, "20");
+		t.delete(20, "20");
 		
 		t.printInorder(t.getRoot());
 		System.out.println();
 		
-		t.delete(20, "18");
+		t.delete(18, "18");
+		
+		t.printInorder(t.getRoot());
+		System.out.println();
+		
+		t.delete(16, "18");
+		
+		t.printInorder(t.getRoot());
+		System.out.println();
+		
+		t.delete(15, "18");
+		
+		t.printInorder(t.getRoot());
+		System.out.println();
+		
+		t.delete(12, "18");
+		
+		t.printInorder(t.getRoot());
+		System.out.println();
+		
+		t.delete(10, "18");
+		t.delete(9, "18");
+		t.delete(8, "18");
+		t.delete(6, "18");
+		t.insert(6, "18");
+		t.insert(8, "18");
+		t.insert(10, "18");
 		
 		t.printInorder(t.getRoot());
 		System.out.println();

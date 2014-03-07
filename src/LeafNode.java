@@ -97,9 +97,16 @@ public class LeafNode extends TreeNode {
 	}
 
 	public void mergeNode(TreeNode node) {
+		for(int i = 0, j = size; i < node.size; i++, j++) {
+			this.keyList.add(j, node.keyList.get(i));
+			this.records.add(j, ((LeafNode) node).records.get(i));
+		}
+		
+		this.size = this.size + node.size;
 	}
 
 	public void delete(int key, String r) {
+
 		int previousKey = this.keyAtIndex(0);
 
 		int keyIndex = this.deleteKeySorted(key);
@@ -108,25 +115,45 @@ public class LeafNode extends TreeNode {
 
 		int minRequiredKeys = (leafOrder / 2);
 		if (size < minRequiredKeys) {
-			if (nextSibling != null && nextSibling.size > minRequiredKeys) {
+			
+			if (nextSibling != null && nextSibling.size > minRequiredKeys  && this.parent == nextSibling.parent) {
+				// Redistribute keys from next sibling
 				int siblingPreviousKey = nextSibling.keyAtIndex(0);
 				redistributeKeys(nextSibling);
-				if(this.parent == this.prevSibling.parent)
-					this.parent.replace(previousKey, this.keyAtIndex(0), this.prevSibling, this);
+				
 				
 				this.parent.replace(siblingPreviousKey, nextSibling.keyAtIndex(0),
 						this, nextSibling);
+				
+				if(this.parent == this.prevSibling.parent)
+					this.parent.replace(previousKey, this.keyAtIndex(0), this.prevSibling, this);
 
-			} else if (prevSibling != null && prevSibling.size > minRequiredKeys) {
+			} else if (prevSibling != null && prevSibling.size > minRequiredKeys && this.parent == prevSibling.parent) {
+				// Redistribute keys from previous sibling
 				((LeafNode) prevSibling).redistributeKeys(this);
 				this.parent.replace(previousKey, this.keyAtIndex(0),
 						prevSibling, this);
 			
-			} else if (nextSibling != null) {
-				mergeNode(nextSibling);
+			} else if (nextSibling != null && this.parent == nextSibling.parent) {
+				int nextSiblingKey = nextSibling.keyAtIndex(0);
+				// Merge with next sibling
+				this.mergeNode(nextSibling);
+				nextSibling.parent.delete(nextSiblingKey);
+				this.parent.replace(previousKey, nextSiblingKey, this.prevSibling, this);
+				this.nextSibling = this.nextSibling.nextSibling;
+				
+				if(this.parent.size == 0)
+					this.parent = null;
 
-			} else 
+			} else if(prevSibling != null && this.parent == prevSibling.parent) {
+				// Merge with previous sibling
 				((LeafNode) prevSibling).mergeNode(this);
+				this.parent.delete(previousKey);
+				prevSibling.nextSibling = this.nextSibling;
+
+				if(prevSibling.parent.size == 0)
+					prevSibling.parent = null;
+			}
 			
 		} else {
 			this.parent.replace(previousKey, keyList.get(0), prevSibling, this);
