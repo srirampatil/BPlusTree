@@ -6,6 +6,7 @@ public class TreeNode {
 	protected List<Integer> keyList;
 	protected int size;
 	protected TreeNode nextSibling;
+	protected TreeNode prevSibling;
 	protected RootChangedListener listener;
 
 	public TreeNode() {
@@ -37,6 +38,17 @@ public class TreeNode {
 		return i;
 	}
 	
+	public int deleteKeySorted(int key) {
+		for(int i = 0; i < size; i++) {
+			if(key == keyList.get(i)) {
+				keyList.remove(i);
+				return i;
+			}
+		}
+				
+		return -1;
+	}
+	
 	public int indexForKey(int key) {
 		return keyList.indexOf(key);
 	}
@@ -59,5 +71,13 @@ public class TreeNode {
 			node = node.childForKey(key);
 		
 		((LeafNode) node).insert(key, value);
+	}
+	
+	public void delete(int key, String value) {
+		TreeNode node = this;
+		while(node instanceof IndexNode)
+			node = node.childForKey(key);
+		
+		((LeafNode) node).delete(key, value);
 	}
 }

@@ -35,14 +35,28 @@ public class IndexNode extends TreeNode {
 		return children.get(index);
 	}
 	
+	public void replace(int replaceKey, int newKey, TreeNode lChild, TreeNode rChild) {
+		if(replaceKey == newKey)
+			return;
+		
+		int keyIndex = indexForKey(replaceKey);
+		if(keyIndex != -1) {
+			this.keyList.set(keyIndex, newKey);
+			this.children.set(keyIndex, lChild);
+			this.children.set(keyIndex + 1, rChild);
+		}
+	}
+	
 	public void add(int key, TreeNode lChild, TreeNode rChild) {
 		int keyIndex = indexForKey(key);
 		if(keyIndex == -1) {
 			keyIndex = addKeySorted(key);
 
-			if(keyIndex < children.size())
-				children.remove(keyIndex);
-			children.add(keyIndex, lChild);
+			if(lChild != null) {
+				if(keyIndex < children.size())
+					children.remove(keyIndex);
+				children.add(keyIndex, lChild);
+			}
 			
 			children.add(keyIndex + 1, rChild);
 			size++;
@@ -56,12 +70,17 @@ public class IndexNode extends TreeNode {
 
 				for (int i = size - 1; i >= mid; i--) {
 					keyList.remove(i);
+					children.get(i + 1).parent = newIndexNode;
 					children.remove(i + 1);
 					size--;
 				}
 
 				newIndexNode.nextSibling = this.nextSibling;
+				if(this.nextSibling != null)
+					this.nextSibling.prevSibling = newIndexNode;
+				
 				this.nextSibling = newIndexNode;
+				newIndexNode.prevSibling = this;
 				newIndexNode.parent = this.parent; 
 				
 				if(this.parent != null) {

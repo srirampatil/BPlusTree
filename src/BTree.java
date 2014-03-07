@@ -21,6 +21,10 @@ public class BTree implements RootChangedListener {
 		return height;
 	}
 	
+	public TreeNode getRoot() {
+		return root;
+	}
+	
 	public boolean contains(int key) {
 		TreeNode node = root;
 		while(node instanceof IndexNode)
@@ -41,7 +45,25 @@ public class BTree implements RootChangedListener {
 		root.insert(key, value);
 	}
 	
-	public void printTree() {
+	public void delete(int key, String value) {
+		root.delete(key, value);
+	}
+	
+	public void printInorder(TreeNode node) {
+		if(node instanceof IndexNode) {
+			printInorder(node.childAtIndex(0));
+			for(int i = 0; i < node.size; i++) {
+				System.out.print(node.keyAtIndex(i) + " ");
+				printInorder(node.childAtIndex(i + 1));
+			}
+			
+		} else {
+			for(int i = 0; i < node.size; i++)
+				System.out.print(node.keyAtIndex(i) + " ");
+		}
+	}
+	
+	public void printLevelOrder() {
 		Queue<TreeNode> nodeQueue = new ArrayDeque<TreeNode>();
 		nodeQueue.offer(root);
 		
@@ -81,7 +103,20 @@ public class BTree implements RootChangedListener {
 		t.insert(5, "5");
 		t.insert(18, "18");
 		t.insert(20, "20");
-		t.printTree();
+		
+		t.printInorder(t.getRoot());
+		System.out.println();
+		
+		t.delete(18, "20");
+		
+		t.printInorder(t.getRoot());
+		System.out.println();
+		
+		t.delete(20, "18");
+		
+		t.printInorder(t.getRoot());
+		System.out.println();
+		
 		System.out.println(t.getHeight());
 	}
 }
